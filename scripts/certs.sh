@@ -3,18 +3,43 @@
 if [ -n "$CERT1" ] || [ -n "$CERT" ]; then
     if [ "$STAGING" = true ]; then
         for certname in ${!CERT*}; do
-            certbot certonly --no-self-upgrade -n --text --standalone \
-            --preferred-challenges http-01 \
-            --staging \
-            -d "${!certname}" --keep --expand --agree-tos --email "$EMAIL" \
-            || exit 2
+            if [[ "${!certname}" == *"*"* ]]; then
+                # Wildcard domain
+                certbot certonly --no-self-upgrade -n --text \
+                --preferred-challenges dns-01 \
+                --dns-cloudflare \
+                --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini \
+                --staging \
+                -d "${!certname}" --keep --expand --agree-tos --email "$EMAIL" \
+                || exit 2
+            else
+                # Non-wildcard domain
+                certbot certonly --no-self-upgrade -n --text \
+                --preferred-challenges http-01 \
+                --standalone \
+                --staging \
+                -d "${!certname}" --keep --expand --agree-tos --email "$EMAIL" \
+                || exit 2
+            fi
         done
     else
         for certname in ${!CERT*}; do
-          	certbot certonly --no-self-upgrade -n --text --standalone \
-            --preferred-challenges http-01 \
-            -d "${!certname}" --keep --expand --agree-tos --email "$EMAIL" \
-            || exit 1
+            if [[ "${!certname}" == *"*"* ]]; then
+                # Wildcard domain
+                certbot certonly --no-self-upgrade -n --text \
+                --preferred-challenges dns-01 \
+                --dns-cloudflare \
+                --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini \
+                -d "${!certname}" --keep --expand --agree-tos --email "$EMAIL" \
+                || exit 1
+            else
+                # Non-wildcard domain
+                certbot certonly --no-self-upgrade -n --text \
+                --preferred-challenges http-01 \
+                --standalone \
+                -d "${!certname}" --keep --expand --agree-tos --email "$EMAIL" \
+                || exit 1
+            fi
         done
     fi
 

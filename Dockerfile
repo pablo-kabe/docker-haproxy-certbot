@@ -17,6 +17,11 @@ RUN apt-get update && apt-get install --no-install-recommends -yqq \
 
 # install haproxy from official debian repos (https://haproxy.debian.net/)
 
+RUN apt-get update && apt-get install --no-install-recommends -yqq python3-pip \
+    && pip install certbot-dns-cloudflare \
+    && apt-get clean autoclean && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN curl https://haproxy.debian.net/bernat.debian.org.gpg \
     | gpg --dearmor > /usr/share/keyrings/haproxy.debian.net.gpg \
     && echo deb "[signed-by=/usr/share/keyrings/haproxy.debian.net.gpg]" \

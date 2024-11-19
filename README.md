@@ -103,3 +103,14 @@ Once a week a cron job check for expiring certificates with certbot agent and re
 
 Most of ideas taken from https://github.com/BradJonesLLC/docker-haproxy-letsencrypt
 
+### MODIFIED IN THIS FORK
+
+The update in this fork is support for manage dns-01 certificates domains with cloudflare
+
+You can put domains with wildcard like this:
+
+```
+*.example.com
+```
+
+And certificate is created with cloudflare plugin
